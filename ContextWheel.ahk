@@ -16,9 +16,10 @@
 CoordMode, Mouse, Screen
 SetBatchLines, 10ms
 SetKeyDelay, -1
-
-
+global BrightnessIniPath :=  A_ScriptDir "\resources\Brightness.ini"
 _BrightnessInit()
+
+
 WheelUp::      _WheelAction(true)
 WheelDown::    _WheelAction(false)
 ;========================= 环境配置 =========================
@@ -143,7 +144,7 @@ _BrightnessInit() {
 }
 _BrightnessAdjust(flag) {
     ddm := "C:\Program Files (x86)\Dell\Dell Display Manager\ddm.exe"
-	IniRead, brightness, Brightness.ini, Settings, brightness, 30
+	IniRead, brightness, %BrightnessIniPath%, Settings, brightness, 30
     brightness := (flag ? brightness+5 : brightness-5)
 	if (brightness > 100)  
 		brightness := 100  
@@ -154,7 +155,7 @@ _BrightnessAdjust(flag) {
 	GuiControl, , BrightnessProgressText, %brightness%
 	Gui, Show
 	RunWait, %ddm% SetBrightnessLevel %brightness%
-	IniWrite, %brightness%, Brightness.ini, Settings, brightness
+	IniWrite, %brightness%, %BrightnessIniPath%, Settings, brightness
 	SetTimer, _BrightnessGuiAnimate, 400
 }
 _BrightnessGuiColor() {
