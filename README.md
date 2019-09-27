@@ -9,7 +9,7 @@
 
 
 ### 演示
-<div align=center><img src="https://github.com/bjc5233/ahk-context-wheel/raw/master/resources/demo.gif"/></div>
+<div align=center><img width="70%" height="70%" src="https://github.com/bjc5233/ahk-context-wheel/raw/master/resources/demo.gif"/></div>
 
 
 
