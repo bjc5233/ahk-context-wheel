@@ -1,5 +1,5 @@
 ﻿;说明
-;  效率工具，使用鼠标滚轮执行切换标签\翻页操作
+;  效率工具，使用鼠标滚轮执行窗口切换、窗口标签切换、页面翻页、窗口缩放动作
 ;备注
 ;  使用快捷键切换虚拟桌面会有动画效果, 如果要消除动画效果, 查看"C:\path\AHK\ahkLearn\wait\win-10-virtual-desktop-enhancer-bjc\a.ahk"
 ;  窗口标题栏的尺寸信息时通过WinSpy获取
@@ -20,8 +20,12 @@ global BrightnessIniPath :=  A_ScriptDir "\resources\Brightness.ini"
 _BrightnessInit()
 
 
-WheelUp::      _WheelAction(true)
-WheelDown::    _WheelAction(false)
+WheelUp::           _WheelAction(true)
+WheelDown::         _WheelAction(false)
+LWin & WheelUp::    ShiftAltTab
+LWin & WheelDown::  AltTab
+^+WheelUp::         _ReSizeWin(true)
+^+WheelDown::       _ReSizeWin(false)
 ;========================= 环境配置 =========================
 
 
@@ -35,6 +39,7 @@ _WheelAction(flag) {
     WinGetPos, winX, winY, winWidth, winHeight, ahk_id %id%
     relativeX := posX-winX, relativeY := posY-winY
     ;print(posX "|" posY "----" winX  "|" winY  "|" winWidth  "|----"  relativeX "|" relativeY)
+    
     
     if ((processName == "explorer.exe" || processName == "Explorer.EXE") && className == "Shell_TrayWnd") {
         if (_IsHoverWinParticularRect(relativeX, relativeY, 0, 300, 0, 38)) { ;鼠标处于任务栏左角落
@@ -85,10 +90,22 @@ _WheelAction(flag) {
            _CommonTabAction(flag)
         }
     }
+    
     if (flag)
         SendInput, {WheelUp}
     else
         SendInput, {WheelDown}
+}
+
+_ReSizeWin(flag) {
+    resizeVal := 60
+    MouseGetPos, posX, posY, id
+    WinGetPos, , , width, height, ahk_id %id%
+    if (flag)
+        width :=width+resizeVal, height := height+resizeVal    
+    else
+        width :=width-resizeVal, height := height-resizeVal
+    WinMove, ahk_id %id%,,,,%width%, %height%
 }
 ;========================= 业务逻辑 =========================
 
