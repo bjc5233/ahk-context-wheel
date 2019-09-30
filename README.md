@@ -11,7 +11,7 @@
 ### 演示
 |chrome|explorer|
 |-|-|
-|<img width="50%" src="https://github.com/bjc5233/ahk-context-wheel/raw/master/resources/demo.gif"/>|<img width="50%" src="https://github.com/bjc5233/ahk-context-wheel/raw/master/resources/demo2.gif"/>|
+|<img src="https://github.com/bjc5233/ahk-context-wheel/raw/master/resources/demo.gif"/>|<img src="https://github.com/bjc5233/ahk-context-wheel/raw/master/resources/demo2.gif"/>|
 
 
 
