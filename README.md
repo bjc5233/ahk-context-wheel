@@ -9,7 +9,13 @@
 
 
 ### 演示
-<div align=center><img width="70%" height="70%" src="https://github.com/bjc5233/ahk-context-wheel/raw/master/resources/demo.gif"/></div>
+|chrome|explorer|
+|-|-|
+|<img width="50%" src="https://github.com/bjc5233/ahk-context-wheel/raw/master/resources/demo.gif"/>|<img width="50%" src="https://github.com/bjc5233/ahk-context-wheel/raw/master/resources/demo2.gif"/>|
+
+
+
+
 
 
 
@@ -23,6 +29,7 @@
 |ideaIDE|标题栏: 切换标签<br>右边缘滚动条处: 页面上下翻页|
 |VSCode编辑器|标题栏: 切换标签|
 |网易云音乐|音乐控制区域: 上一曲\下一曲|
+|资源管理器|标题栏: 上下垂直选择文件<br>标题栏+鼠标右键: 左右水平选择文件|
 
 
 

@@ -38,57 +38,62 @@ _WheelAction(flag) {
     WinGetClass, className, ahk_id %id%
     WinGetPos, winX, winY, winWidth, winHeight, ahk_id %id%
     relativeX := posX-winX, relativeY := posY-winY
-    ;print(posX "|" posY "----" winX  "|" winY  "|" winWidth  "|----"  relativeX "|" relativeY)
+    ;print(processName "|" posX "|" posY "----" winX  "|" winY  "|" winWidth  "|----"  relativeX "|" relativeY)
     
     
-    if ((processName == "explorer.exe" || processName == "Explorer.EXE") && className == "Shell_TrayWnd") {
-        if (_IsHoverWinParticularRect(relativeX, relativeY, 0, 300, 0, 38)) { ;鼠标处于任务栏左角落
-            _BrightnessAdjust(flag)
-        } else if (_IsHoverWinParticularRect(relativeX, relativeY, winWidth-300, winWidth, 0, 38)) { ;鼠标处于任务栏右角落
-            _CommonVolumeAction(flag)
-        } else {
-            if (flag)
-                SendInput, #^{Left}     ;win+ctrl+左
+    
+        
+    if (processName == "explorer.exe" || processName == "Explorer.EXE") {
+        if (className == "Shell_TrayWnd") { ;任务栏
+            if (_IsHoverWinParticularRect(relativeX, relativeY, 0, 300, 0, 38)) ;鼠标处于任务栏左角落
+                _BrightnessAdjust(flag)
+            else if (_IsHoverWinParticularRect(relativeX, relativeY, winWidth-300, winWidth, 0, 38)) ;鼠标处于任务栏右角落
+                _CommonVolumeAction(flag)
             else
-                SendInput, #^{Right}	;win+ctrl+右
+                _CommonVirtualDesktopAction(flag)
+        } else if (className == "CabinetWClass") { ;资源管理器
+            if (_IsHoverWinTitleBar(relativeX, relativeY, winWidth, 105)) {
+                if (GetKeyState("RButton"))
+                    _CommonHorizontalDirectionAction(flag)
+                else
+                    _CommonVerticalDirectionAction(flag)
+            }
         }
+            
     } else if (processName == "chrome.exe") {
-        if (_IsHoverWinTitleBar(relativeX, relativeY, winWidth, 150)) {
+        if (_IsHoverWinTitleBar(relativeX, relativeY, winWidth, 150))
             _CommonTabAction(flag)
-        } else if (_IsHoverWinParticularRect(relativeX, relativeY, winWidth-20, winWidth, 150, winHeight)) { ;滚动条
+        else if (_IsHoverWinParticularRect(relativeX, relativeY, winWidth-20, winWidth, 150, winHeight)) ;滚动条
             return _CommonScrollbarAction(flag)     ;此处return是为了避免执行sendInput, WheelDown; 否则页面滚动会多一个WheelDown动作
-        }
+        
     } else if (processName == "SciTE.exe") {
-        if (_IsHoverWinTitleBar(relativeX, relativeY, winWidth, 125)) { ;鼠标处于SciTE标题栏
+        if (_IsHoverWinTitleBar(relativeX, relativeY, winWidth, 125)) ;鼠标处于SciTE标题栏
             _CommonTabAction(flag)
-        } else if (_IsHoverWinParticularRect(relativeX, relativeY, winWidth-25, winWidth, 125, winHeight)) { ;滚动条
+        else if (_IsHoverWinParticularRect(relativeX, relativeY, winWidth-25, winWidth, 125, winHeight)) ;滚动条
             _CommonScrollbarAction(flag)
-        }
+        
     } else if (processName == "notepad++.exe") {
-        if (_IsHoverWinTitleBar(relativeX, relativeY, winWidth, 120)) {
+        if (_IsHoverWinTitleBar(relativeX, relativeY, winWidth, 120))
             _CommonTabAction(flag)
-        }
+            
     } else if (processName == "idea64.exe") {
-        if (_IsHoverWinTitleBar(relativeX, relativeY, winWidth, 100)) {
+        if (_IsHoverWinTitleBar(relativeX, relativeY, winWidth, 100))
             _CommonTabAction(flag)
-        } else if (_IsHoverWinParticularRect(relativeX, relativeY, winWidth-30, winWidth, 100, winHeight)) { ;滚动条
+        else if (_IsHoverWinParticularRect(relativeX, relativeY, winWidth-30, winWidth, 100, winHeight)) ;滚动条
             return _CommonScrollbarAction(flag)
-        }
+        
     } else if (processName == "cmd.exe") {
-        if (_IsHoverWinTitleBar(relativeX, relativeY, winWidth, 40)) {
-            if (flag)
-                SendInput, {Up}
-            else
-                SendInput, {Down}
-        }
+        if (_IsHoverWinTitleBar(relativeX, relativeY, winWidth, 40))
+            _CommonVerticalDirectionAction(flag)
+        
     } else if (processName == "cloudmusic.exe") {
-        if (_IsHoverWinParticularRect(relativeX, relativeY, 0, winWidth, winHeight-60, winHeight)) { ;鼠标当处于网易云音乐控制区域
+        if (_IsHoverWinParticularRect(relativeX, relativeY, 0, winWidth, winHeight-60, winHeight)) ;鼠标当处于网易云音乐控制区域
             _CommonMusicAction(flag)
-        }
+        
     } else if (processName == "Code.exe") {
-        if (_IsHoverWinTitleBar(relativeX, relativeY, winWidth, 100)) {
+        if (_IsHoverWinTitleBar(relativeX, relativeY, winWidth, 100))
            _CommonTabAction(flag)
-        }
+           
     }
     
     if (flag)
@@ -147,6 +152,26 @@ _CommonMusicAction(flag) {
     else
         SendInput, ^{Right}
 }
+_CommonHorizontalDirectionAction(flag) {
+    if (flag)
+        SendInput, {Left}
+    else
+        SendInput, {Right}
+}
+_CommonVerticalDirectionAction(flag) {
+    if (flag)
+        SendInput, {Up}
+    else
+        SendInput, {Down}
+}
+_CommonVirtualDesktopAction(flag) {
+    if (flag)
+        SendInput, #^{Left}     ;Win+Ctrl+左
+    else
+        SendInput, #^{Right}	;Win+Ctrl+右
+}
+
+
 
 
 _BrightnessInit() {
