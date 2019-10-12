@@ -1,12 +1,15 @@
 ﻿;说明
-;  效率工具，使用鼠标滚轮执行窗口切换、窗口标签切换、页面翻页、窗口缩放动作
+;  效率工具，使用鼠标滚轮执行窗口切换、窗口标签切换、页面翻页、文件选择、窗口缩放动作
 ;备注
 ;  使用快捷键切换虚拟桌面会有动画效果, 如果要消除动画效果, 查看"C:\path\AHK\ahkLearn\wait\win-10-virtual-desktop-enhancer-bjc\a.ahk"
 ;  窗口标题栏的尺寸信息时通过WinSpy获取
+;  当前使用的屏幕分辨率是2560x1440
 ;external
 ;  date       2019-08-12 14:55:48
 ;  face       -_-#
 ;  weather    Shanghai Overcast 35℃
+;TODO
+;  数值300等数值转为百分率，防止在不同分辨率下数值不一样
 ;========================= 环境配置 =========================
 #NoEnv
 #Persistent
@@ -40,9 +43,6 @@ _WheelAction(flag) {
     relativeX := posX-winX, relativeY := posY-winY
     ;print(processName "|" posX "|" posY "----" winX  "|" winY  "|" winWidth  "|----"  relativeX "|" relativeY)
     
-    
-    
-        
     if (processName == "explorer.exe" || processName == "Explorer.EXE") {
         if (className == "Shell_TrayWnd") { ;任务栏
             if (_IsHoverWinParticularRect(relativeX, relativeY, 0, 300, 0, 38)) ;鼠标处于任务栏左角落
@@ -82,6 +82,10 @@ _WheelAction(flag) {
         else if (_IsHoverWinParticularRect(relativeX, relativeY, winWidth-30, winWidth, 100, winHeight)) ;滚动条
             return _CommonScrollbarAction(flag)
         
+    } else if (processName == "Code.exe") {
+        if (_IsHoverWinTitleBar(relativeX, relativeY, winWidth, 100))
+           _CommonTabAction(flag)
+           
     } else if (processName == "cmd.exe") {
         if (_IsHoverWinTitleBar(relativeX, relativeY, winWidth, 40))
             _CommonVerticalDirectionAction(flag)
@@ -90,10 +94,10 @@ _WheelAction(flag) {
         if (_IsHoverWinParticularRect(relativeX, relativeY, 0, winWidth, winHeight-60, winHeight)) ;鼠标当处于网易云音乐控制区域
             _CommonMusicAction(flag)
         
-    } else if (processName == "Code.exe") {
-        if (_IsHoverWinTitleBar(relativeX, relativeY, winWidth, 100))
-           _CommonTabAction(flag)
-           
+    } else if (processName == "AutoHotkey.exe") {
+        WinGetTitle, curWinTitle , ahk_id %id%
+        if (curWinTitle == "AHKScriptManager")
+            _CommonVerticalDirectionAction(flag)
     }
     
     if (flag)
