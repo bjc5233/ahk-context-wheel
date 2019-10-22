@@ -10,6 +10,7 @@
 ;  weather    Shanghai Overcast 35℃
 ;TODO
 ;  数值300等数值转为百分率，防止在不同分辨率下数值不一样
+;  不管在哪个界面，右下角都可以音量调节
 ;========================= 环境配置 =========================
 #NoEnv
 #Persistent
@@ -21,6 +22,7 @@ SetBatchLines, 10ms
 SetKeyDelay, -1
 global BrightnessIniPath :=  A_ScriptDir "\resources\Brightness.ini"
 _BrightnessInit()
+
 
 
 WheelUp::           _WheelAction(true)
@@ -43,14 +45,14 @@ _WheelAction(flag) {
     relativeX := posX-winX, relativeY := posY-winY
     ;print(processName "|" posX "|" posY "----" winX  "|" winY  "|" winWidth  "|----"  relativeX "|" relativeY)
     
-    if (processName == "explorer.exe" || processName == "Explorer.EXE") {
+    
+    if (_IsHoverScreenParticularRect(posX, posY, A_ScreenWidth-200, A_ScreenHeight-200, A_ScreenWidth, A_ScreenHeight)) { ;屏幕右下角[200,200]
+        return _CommonVolumeAction(flag)
+    } else if (_IsHoverScreenParticularRect(posX, posY, 0, A_ScreenHeight-200, 200, A_ScreenHeight)) { ;屏幕左下角[200,200]
+        return _BrightnessAdjust(flag)
+    } else if (processName == "explorer.exe" || processName == "Explorer.EXE") {
         if (className == "Shell_TrayWnd") { ;任务栏
-            if (_IsHoverWinParticularRect(relativeX, relativeY, 0, 300, 0, 38)) ;鼠标处于任务栏左角落
-                _BrightnessAdjust(flag)
-            else if (_IsHoverWinParticularRect(relativeX, relativeY, winWidth-300, winWidth, 0, 38)) ;鼠标处于任务栏右角落
-                _CommonVolumeAction(flag)
-            else
-                _CommonVirtualDesktopAction(flag)
+            _CommonVirtualDesktopAction(flag)
         } else if (className == "CabinetWClass") { ;资源管理器
             if (_IsHoverWinTitleBar(relativeX, relativeY, winWidth, 105)) {
                 if (GetKeyState("RButton"))
@@ -98,6 +100,9 @@ _WheelAction(flag) {
         WinGetTitle, curWinTitle , ahk_id %id%
         if (curWinTitle == "AHKScriptManager")
             _CommonVerticalDirectionAction(flag)
+    } else if (processName == "ONENOTE.EXE") {
+        if (_IsHoverWinParticularRect(relativeX, relativeY, winWidth-60, winWidth, 85, winHeight)) ;滚动条
+            return _CommonScrollbarAction(flag)
     }
     
     if (flag)
@@ -126,11 +131,14 @@ _ReSizeWin(flag) {
 
 
 ;========================= 公共函数 =========================
+_IsHoverScreenParticularRect(posX, posY, minX, minY, maxX, maxY) {
+    return (posX>=minX && posX<=maxX && posY>=minY && posY<=maxY)
+}
 _IsHoverWinTitleBar(relativeX, relativeY, barWidth, barHeight) {
     return (relativeX>=0 && relativeX<=barWidth && relativeY>=0 && relativeY<=barHeight)
 }
-_IsHoverWinParticularRect(relativeX, relativeY, xMin, xMax, yMin, yMax) {
-    return (relativeX>=xMin && relativeX<=xMax && relativeY>=yMin && relativeY<=yMax)
+_IsHoverWinParticularRect(relativeX, relativeY, minX, maxX, minY, maxY) {
+    return (relativeX>=minX && relativeX<=maxX && relativeY>=minY && relativeY<=maxY)
 }
 _CommonTabAction(flag) {
     if (flag)
