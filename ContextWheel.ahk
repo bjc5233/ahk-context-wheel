@@ -49,7 +49,9 @@ _WheelAction(flag) {
     if (_IsHoverScreenParticularRect(posX, posY, A_ScreenWidth-200, A_ScreenHeight-200, A_ScreenWidth, A_ScreenHeight)) { ;屏幕右下角[200,200]
         return _CommonVolumeAction(flag)
     } else if (_IsHoverScreenParticularRect(posX, posY, 0, A_ScreenHeight-200, 200, A_ScreenHeight)) { ;屏幕左下角[200,200]
-        return _BrightnessAdjust(flag)
+        ;return _BrightnessAdjust(flag)
+        ;音乐媒体切换
+        _CommonSystemLevelMusicAction(flag)
     } else if (processName == "explorer.exe" || processName == "Explorer.EXE") {
         if (className == "Shell_TrayWnd") { ;任务栏
             _CommonVirtualDesktopAction(flag)
@@ -65,34 +67,38 @@ _WheelAction(flag) {
     } else if (processName == "chrome.exe") {
         if (_IsHoverWinTitleBar(relativeX, relativeY, winWidth, 150))
             _CommonTabAction(flag)
-        else if (_IsHoverWinParticularRect(relativeX, relativeY, winWidth-20, winWidth, 150, winHeight)) ;滚动条
+        else if (_IsHoverWinParticularRect(relativeX, relativeY, winWidth-60, winWidth, 150, winHeight)) ;滚动条
             return _CommonScrollbarAction(flag)     ;此处return是为了避免执行sendInput, WheelDown; 否则页面滚动会多一个WheelDown动作
         
-    } else if (processName == "SciTE.exe") {
+    } else if (processName == "SciTE.exe") { ;ahk编辑器
         if (_IsHoverWinTitleBar(relativeX, relativeY, winWidth, 125)) ;鼠标处于SciTE标题栏
             _CommonTabAction(flag)
-        else if (_IsHoverWinParticularRect(relativeX, relativeY, winWidth-25, winWidth, 125, winHeight)) ;滚动条
+        else if (_IsHoverWinParticularRect(relativeX, relativeY, winWidth-35, winWidth, 125, winHeight)) ;滚动条
             _CommonScrollbarAction(flag)
         
     } else if (processName == "notepad++.exe") {
         if (_IsHoverWinTitleBar(relativeX, relativeY, winWidth, 120))
             _CommonTabAction(flag)
+        else if (_IsHoverWinParticularRect(relativeX, relativeY, winWidth-25, winWidth, 125, winHeight)) ;滚动条
+            _CommonScrollbarAction(flag)
             
-    } else if (processName == "idea64.exe") {
+    } else if (processName == "idea64.exe") { ;IDEA IDE编辑器
         if (_IsHoverWinTitleBar(relativeX, relativeY, winWidth, 100))
             _CommonTabAction(flag)
         else if (_IsHoverWinParticularRect(relativeX, relativeY, winWidth-30, winWidth, 100, winHeight)) ;滚动条
             return _CommonScrollbarAction(flag)
         
-    } else if (processName == "Code.exe") {
+    } else if (processName == "Code.exe") { ;vscode编辑器
         if (_IsHoverWinTitleBar(relativeX, relativeY, winWidth, 100))
            _CommonTabAction(flag)
-           
+        else if (_IsHoverWinParticularRect(relativeX, relativeY, winWidth-25, winWidth, 135, winHeight)) ;滚动条
+            _CommonScrollbarAction(flag)
+        
     } else if (processName == "cmd.exe") {
         if (_IsHoverWinTitleBar(relativeX, relativeY, winWidth, 40))
             _CommonVerticalDirectionAction(flag)
         
-    } else if (processName == "cloudmusic.exe") {
+    } else if (processName == "cloudmusic.exe") { ;网易云音乐
         if (_IsHoverWinParticularRect(relativeX, relativeY, 0, winWidth, winHeight-60, winHeight)) ;鼠标当处于网易云音乐控制区域
             _CommonMusicAction(flag)
         
@@ -102,6 +108,9 @@ _WheelAction(flag) {
             _CommonVerticalDirectionAction(flag)
     } else if (processName == "ONENOTE.EXE") {
         if (_IsHoverWinParticularRect(relativeX, relativeY, winWidth-60, winWidth, 85, winHeight)) ;滚动条
+            return _CommonScrollbarAction(flag)
+    } else if (processName == "WINWORD.EXE") {
+        if (_IsHoverWinParticularRect(relativeX, relativeY, winWidth-50, winWidth, 200, winHeight)) ;滚动条
             return _CommonScrollbarAction(flag)
     }
     
@@ -157,6 +166,12 @@ _CommonVolumeAction(flag) {
         SendInput, {Volume_Up 5}
     else
         SendInput, {Volume_Down 5}
+}
+_CommonSystemLevelMusicAction(flag) {
+    if (flag)
+        SendInput, {Media_Prev}
+    else
+        SendInput, {Media_Next}
 }
 _CommonMusicAction(flag) {
     if (flag)
