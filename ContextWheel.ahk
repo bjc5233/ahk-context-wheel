@@ -69,6 +69,8 @@ _WheelAction(flag) {
             _CommonTabAction(flag)
         else if (_IsHoverWinParticularRect(relativeX, relativeY, winWidth-60, winWidth, 150, winHeight)) ;滚动条
             return _CommonScrollbarAction(flag)     ;此处return是为了避免执行sendInput, WheelDown; 否则页面滚动会多一个WheelDown动作
+        else if (_IsHoverWinBottomBar(relativeX, relativeY, 150, winWidth, winHeight)) ;底部状态栏
+            return _CommonHorizontalDirectionAction2(flag)  ;对于比较宽有横向滚动条的页面，使用鼠标滚轮控制
         
     } else if (processName == "SciTE.exe") { ;ahk编辑器
         if (_IsHoverWinTitleBar(relativeX, relativeY, winWidth, 125)) ;鼠标处于SciTE标题栏
@@ -112,23 +114,15 @@ _WheelAction(flag) {
     } else if (processName == "WINWORD.EXE") {
         if (_IsHoverWinParticularRect(relativeX, relativeY, winWidth-50, winWidth, 200, winHeight)) ;滚动条
             return _CommonScrollbarAction(flag)
+    } else if (processName == "wechatdevtools.exe") {   ;微信开发者工具
+        if (_IsHoverWinParticularRect(relativeX, relativeY, winWidth-40, winWidth, 160, winHeight)) ;滚动条
+            return _CommonScrollbarAction(flag)
     }
     
     if (flag)
         SendInput, {WheelUp}
     else
         SendInput, {WheelDown}
-}
-
-_ReSizeWin(flag) {
-    resizeVal := 60
-    MouseGetPos, posX, posY, id
-    WinGetPos, , , width, height, ahk_id %id%
-    if (flag)
-        width :=width+resizeVal, height := height+resizeVal    
-    else
-        width :=width-resizeVal, height := height-resizeVal
-    WinMove, ahk_id %id%,,,,%width%, %height%
 }
 ;========================= 业务逻辑 =========================
 
@@ -140,11 +134,27 @@ _ReSizeWin(flag) {
 
 
 ;========================= 公共函数 =========================
+_ReSizeWin(flag) {
+    resizeVal := 60
+    MouseGetPos, posX, posY, id
+    WinGetPos, , , width, height, ahk_id %id%
+    if (flag)
+        width :=width+resizeVal, height := height+resizeVal    
+    else
+        width :=width-resizeVal, height := height-resizeVal
+    WinMove, ahk_id %id%,,,,%width%, %height%
+}
+
+
+
 _IsHoverScreenParticularRect(posX, posY, minX, minY, maxX, maxY) {
     return (posX>=minX && posX<=maxX && posY>=minY && posY<=maxY)
 }
 _IsHoverWinTitleBar(relativeX, relativeY, barWidth, barHeight) {
     return (relativeX>=0 && relativeX<=barWidth && relativeY>=0 && relativeY<=barHeight)
+}
+_IsHoverWinBottomBar(relativeX, relativeY, barHeight, winWidth, winHeight) {
+    return (relativeX>=0 && relativeX<=winWidth && relativeY>=(winHeight-barHeight) && relativeY<=winHeight)
 }
 _IsHoverWinParticularRect(relativeX, relativeY, minX, maxX, minY, maxY) {
     return (relativeX>=minX && relativeX<=maxX && relativeY>=minY && relativeY<=maxY)
@@ -184,6 +194,12 @@ _CommonHorizontalDirectionAction(flag) {
         SendInput, {Left}
     else
         SendInput, {Right}
+}
+_CommonHorizontalDirectionAction2(flag) {
+    if (flag)
+        SendInput, {Left 2}
+    else
+        SendInput, {Right 2}
 }
 _CommonVerticalDirectionAction(flag) {
     if (flag)
