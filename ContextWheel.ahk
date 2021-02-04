@@ -69,8 +69,9 @@ _WheelAction(flag) {
             _CommonTabAction(flag)
         else if (_IsHoverWinParticularRect(relativeX, relativeY, winWidth-60, winWidth, 150, winHeight)) ;滚动条
             return _CommonScrollbarAction(flag)     ;此处return是为了避免执行sendInput, WheelDown; 否则页面滚动会多一个WheelDown动作
-        else if (_IsHoverWinBottomBar(relativeX, relativeY, 150, winWidth, winHeight)) ;底部状态栏
+        else if (_IsHoverWinBottomBar(relativeX, relativeY, 150, winWidth, winHeight) && _IsMouseLeftButtonPressed()) { ;在窗口底部中间位置，且按下鼠标左键
             return _CommonHorizontalDirectionAction2(flag)  ;对于比较宽有横向滚动条的页面，使用鼠标滚轮控制
+        }
         
     } else if (processName == "SciTE.exe") { ;ahk编辑器
         if (_IsHoverWinTitleBar(relativeX, relativeY, winWidth, 125)) ;鼠标处于SciTE标题栏
@@ -159,6 +160,15 @@ _IsHoverWinBottomBar(relativeX, relativeY, barHeight, winWidth, winHeight) {
 _IsHoverWinParticularRect(relativeX, relativeY, minX, maxX, minY, maxY) {
     return (relativeX>=minX && relativeX<=maxX && relativeY>=minY && relativeY<=maxY)
 }
+_IsMouseLeftButtonPressed() {   ;是否按下了鼠标左键
+    GetKeyState, state, LButton, P
+    if state = D
+        return true
+    else
+        return false
+}
+
+
 _CommonTabAction(flag) {
     if (flag)
         SendInput, ^{PgUp}
